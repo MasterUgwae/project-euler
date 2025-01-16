@@ -1,6 +1,4 @@
-from functools import lru_cache
-import heapq
-heapq.heapify()
+'''import math
 rc=1
 
 def isPrime(n) -> bool:
@@ -11,7 +9,6 @@ def isPrime(n) -> bool:
         if n%i==0:
             return False
     return True
-
 
 def find_ratio(spiral:list[list[str]])->float:
     numerator=0
@@ -41,28 +38,10 @@ def move_left(x,y):
 def move_right(x,y):
     return x, y+1
 
-@lru_cache(maxsize=512)
-def choose_move(n, group=0, size=0, count=1): #Start from group 0 with size 1 and count of numbers = 1 
 
-    if n < count:
-        return group
-    else:
-        group += 1
-        size = (group // 2) + 1
-        count += size
-        return choose_move(n, group, size, count)
+def choose_move(n): #Start from group 0 with size 1 and count of numbers = 1 
+    return math.ceil(2*math.sqrt(n)-1)-1
 
-import math
-
-def find_output_constant(n):
-    return math.ceil((-1 + math.sqrt(1 + 8 * n)) / 2) - 1
-
-# Example usage
-for i in range(25):
-    print(f"Input: {i}, Output: {find_output_constant(i)}")
-# Example usage
-for i in range(25):
-    print(f"Input: {i}, Output: {choose_move(i)}")
 
 def expand(spiral:list[list[str]])->list[list[str]]: 
     for i in range(len(spiral)):
@@ -73,7 +52,7 @@ def expand(spiral:list[list[str]])->list[list[str]]:
     x=rc-2
     y=rc-2
     for i in range((rc-2)**2,(rc)**2):
-        move=choose_move(i-1)
+        move=choose_move(i)
         if move%4==0:
             x,y = move_right(x,y)
         elif move%4==1:
@@ -94,10 +73,37 @@ for i in range(len(arr)):
     for j in range(len(arr[i])):
         print(f"{int(arr[i][j]):8.3f}", end=" ")
     print()
-while find_ratio(spiral)>0.1:
+ratio=find_ratio(spiral)
+while ratio>0.1:
     
     spiral = expand(spiral)
-    print(len(spiral))
+    print(len(spiral),ratio)
+    ratio = find_ratio(spiral)
 
 print(len(spiral))
+'''
+import math
+def isPrime(n) -> bool:
+    if n%1!=0: return False
+    if n==2 or n==3: return True
+    if n%2==0 or n<2: return False
+    for i in range(3, int(n**0.5)+1, 2):   # only odd numbers
+        if n%i==0:
+            return False
+    return True
 
+diagonals:list[int]=[False]
+def add_diagonals(diagonals,n):
+    diagonals.append(isPrime(int(((n-1)**2+1+(n-2)**2)/2)))
+    diagonals.append(isPrime((n-1)**2+1))
+    diagonals.append(isPrime(int(((n-1)**2+1+n**2)/2)))
+    diagonals.append(False)
+    return diagonals
+diagonals=add_diagonals(diagonals,3)
+count=3
+ratio=diagonals.count(True)/len(diagonals)
+while ratio>0.1:
+    count+=2
+    diagonals=add_diagonals(diagonals,count)
+    ratio = diagonals.count(True)/len(diagonals)
+print(ratio,count)
